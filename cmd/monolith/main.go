@@ -41,10 +41,18 @@ func run() (err error) {
 		logger.Error("error occurred while connecting to the database",
 			"error", err,
 		)
-		os.Exit(1)
+		return err
 	}
 	defer db.Close()
 	logger.Info("database connection pool established")
+
+	logger.Info("opening message queue connection pool...")
+	mq, err := openQueue(config.MQ)
+	if err != nil {
+		slog.Error("unable to create message queue connection pool", "error", err)
+		return err
+	}
+	defer mq.Shutdown()
 
 	return nil
 }
