@@ -5,11 +5,12 @@ import (
 	"database/sql"
 	"time"
 
+	_ "github.com/jackc/pgx/v5/stdlib"
 	"github.com/r3d5un/modularmonolith/cmd/monolith/config"
 )
 
 func openDB(config config.DatabaseConfiguration) (*sql.DB, error) {
-	db, err := sql.Open("sqlserver", config.DSN)
+	db, err := sql.Open("pgx", config.DSN)
 	if err != nil {
 		return nil, err
 	}
