@@ -31,6 +31,7 @@ func New() (*Configuration, error) {
 	viper.SetConfigName("config")
 	viper.SetConfigType("yaml")
 	viper.AddConfigPath("/app/")
+	viper.AddConfigPath("$HOME/.config/modularmonolith")
 	viper.AddConfigPath(".")
 
 	err := viper.ReadInConfig()
