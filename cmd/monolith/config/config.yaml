@@ -7,3 +7,6 @@ db:
   maxIdleConns: 25
   maxIdleTime: "15m"
   timeout: 5
+mq:
+  dsn: "amqp://rabbitmq:rabbitmq@localhost:5672/monolith"
+  maxConns: 10

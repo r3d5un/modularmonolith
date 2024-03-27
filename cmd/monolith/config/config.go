@@ -6,8 +6,9 @@ import (
 
 // The top level object holding all configuraiton options set in the application.
 type Configuration struct {
-	App ApplicationConfiguration `json:"app"`
-	DB  DatabaseConfiguration    `json:"db"`
+	App ApplicationConfiguration  `json:"app"`
+	DB  DatabaseConfiguration     `json:"db"`
+	MQ  MessageQueueConfiguration `json:"mq"`
 }
 
 // The part of the configuration dedicated to manage the top level and shared
@@ -23,6 +24,11 @@ type DatabaseConfiguration struct {
 	MaxIdleConns int    `json:"max-idle-conns"`
 	MaxIdleTime  string `json:"max-idle-time"`
 	Timeout      int    `json:"timeout"`
+}
+
+type MessageQueueConfiguration struct {
+	DSN      string `json:"-"`
+	MaxConns int    `json:"max-conns"`
 }
 
 func New() (*Configuration, error) {
