@@ -7,6 +7,7 @@ import (
 // The top level object holding all configuraiton options set in the application.
 type Configuration struct {
 	App ApplicationConfiguration `json:"app"`
+	DB  DatabaseConfiguration    `json:"db"`
 }
 
 // The part of the configuration dedicated to manage the top level and shared

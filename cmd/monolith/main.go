@@ -35,5 +35,16 @@ func run() (err error) {
 	}
 	logger.Info("configuration loaded", "configuration", config)
 
+	logger.Info("opening database connection pool...")
+	db, err := openDB(config.DB)
+	if err != nil {
+		logger.Error("error occurred while connecting to the database",
+			"error", err,
+		)
+		os.Exit(1)
+	}
+	defer db.Close()
+	logger.Info("database connection pool established")
+
 	return nil
 }
