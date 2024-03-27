@@ -1,0 +1,9 @@
+app:
+  env: "development"
+  port: 4000
+db:
+  dsn: "sqlserver://sa:oPax9HFmjU4AV%5EAqXEeA@sql-server:1433?database=master&TrustServerCertificate=true"
+  maxOpenConns: 25
+  maxIdleConns: 25
+  maxIdleTime: "15m"
+  timeout: 5
