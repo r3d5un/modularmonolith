@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"log/slog"
+	"net/http"
 	"os"
 
 	"github.com/google/uuid"
@@ -54,6 +55,14 @@ func run() (err error) {
 	}
 	defer mq.Shutdown()
 	logger.Info("message queue connection pool established")
+
+	app := application{
+		cfg:    config,
+		db:     db,
+		mq:     mq,
+		mux:    http.NewServeMux(),
+		logger: logger,
+	}
 
 	return nil
 }
