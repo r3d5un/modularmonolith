@@ -53,6 +53,7 @@ func run() (err error) {
 		return err
 	}
 	defer mq.Shutdown()
+	logger.Info("message queue connection pool established")
 
 	return nil
 }
