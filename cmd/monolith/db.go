@@ -6,7 +6,7 @@ import (
 	"time"
 
 	_ "github.com/jackc/pgx/v5/stdlib"
-	"github.com/r3d5un/modularmonolith/cmd/monolith/config"
+	"github.com/r3d5un/modularmonolith/internal/config"
 )
 
 func openDB(config config.DatabaseConfiguration) (*sql.DB, error) {

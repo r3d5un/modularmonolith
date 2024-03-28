@@ -6,7 +6,7 @@ import (
 	"os"
 
 	"github.com/google/uuid"
-	"github.com/r3d5un/modularmonolith/cmd/monolith/config"
+	"github.com/r3d5un/modularmonolith/internal/config"
 )
 
 func main() {

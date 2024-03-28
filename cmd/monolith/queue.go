@@ -1,7 +1,7 @@
 package main
 
 import (
-	"github.com/r3d5un/modularmonolith/cmd/monolith/config"
+	"github.com/r3d5un/modularmonolith/internal/config"
 	"github.com/r3d5un/modularmonolith/internal/queue"
 	amqp "github.com/rabbitmq/amqp091-go"
 )
