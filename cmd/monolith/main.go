@@ -64,5 +64,12 @@ func run() (err error) {
 		logger: logger,
 	}
 
+	logger.Info("starting server", "settings", config.App)
+	err = app.serve()
+	if err != nil {
+		logger.Error("unable to start server", "error", err)
+		return err
+	}
+
 	return nil
 }
