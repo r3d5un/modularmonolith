@@ -66,7 +66,7 @@ WHERE id = $1;`
 
 func (m *PeppolBusinessCardModel) Insert(
 	ctx context.Context,
-	pbc PeppolBusinessCard,
+	pbc *PeppolBusinessCard,
 ) (*PeppolBusinessCard, error) {
 	logger := logging.LoggerFromContext(ctx)
 
@@ -100,14 +100,50 @@ RETURNING id, name, countrycode, last_updated, business_card;`
 		return nil, err
 	}
 
-	return &pbc, nil
+	return pbc, nil
 }
 
 func (m *PeppolBusinessCardModel) Upsert(
 	ctx context.Context,
-	bc *PeppolBusinessCard,
+	pbc *PeppolBusinessCard,
 ) (*PeppolBusinessCard, error) {
-	return nil, nil
+	logger := logging.LoggerFromContext(ctx)
+
+	stmt := `INSERT INTO peppol_business_cards (id, name, countrycode, last_updated, business_card)
+VALUES ($1, $2, $3, NOW(), $4)
+ON CONFLICT (id) DO UPDATE
+SET
+    name = EXCLUDED.name, countrycode = EXCLUDED.countrycode,
+    last_updated = NOW(), business_card = EXCLUDED.business_card
+RETURNING id, name, countrycode, last_updated, business_card;`
+
+	pbcBytes, err := json.Marshal(pbc.PeppolBusinessCard)
+	if err != nil {
+		logger.Error("error marshaling peppol_business_card", "error", err)
+		return nil, err
+	}
+
+	qCtx, cancel := context.WithTimeout(ctx, *m.Timeout)
+	defer cancel()
+
+	var jpbc []byte
+
+	logger.Info("inserting peppol business card", "query", stmt, "id", pbc.ID)
+	row := m.DB.QueryRowContext(qCtx, stmt, pbc.ID, pbc.Name, pbc.CountryCode, pbcBytes)
+	err = row.Scan(&pbc.ID, &pbc.Name, &pbc.CountryCode, &pbc.LastUpdated, &jpbc)
+	if err != nil {
+		logger.Error("error inserting peppol business card", "error", err)
+		return nil, err
+	}
+	logger.InfoContext(ctx, "peppol business card inserted", "id", pbc.ID)
+
+	err = json.Unmarshal(jpbc, &pbc.PeppolBusinessCard)
+	if err != nil {
+		logger.ErrorContext(ctx, "error unmarshaling peppol_business_card", "error", err)
+		return nil, err
+	}
+
+	return pbc, nil
 }
 
 func (m *PeppolBusinessCardModel) Delete(
