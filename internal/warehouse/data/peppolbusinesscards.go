@@ -4,6 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"encoding/json"
+	"errors"
 	"log/slog"
 	"time"
 
@@ -151,4 +152,66 @@ func (m *PeppolBusinessCardModel) Delete(
 	id string,
 ) (*PeppolBusinessCard, error) {
 	return nil, nil
+}
+
+func (m *PeppolBusinessCardModel) Update(
+	ctx context.Context,
+	pbc *PeppolBusinessCard,
+) (*PeppolBusinessCard, error) {
+	logger := logging.LoggerFromContext(ctx)
+
+	stmt := `UPDATE peppol_business_card
+SET id = $1, name = $2, countrycode = $3, last_updated = NOW(), business_card = $4
+WHERE id = $1
+RETURNING id, name, countrycode, last_updated, business_card;
+    `
+
+	jsonBc, err := json.Marshal(pbc.PeppolBusinessCard)
+	if err != nil {
+		return nil, err
+	}
+
+	args := []any{
+		pbc.ID,
+		pbc.Name,
+		pbc.CountryCode,
+		jsonBc,
+	}
+
+	rCtx, cancel := context.WithTimeout(ctx, 3*time.Second)
+	defer cancel()
+
+	var bcRaw []byte
+
+	logger.InfoContext(rCtx, "updating business card", "query", stmt, "args", args)
+	err = m.DB.QueryRowContext(ctx, stmt, args...).Scan(
+		&pbc.ID, &pbc.Name, &pbc.CountryCode, &pbc.LastUpdated, &bcRaw,
+	)
+	if err != nil {
+		switch {
+		case errors.Is(err, sql.ErrNoRows):
+			logger.InfoContext(ctx, "no records found", "query", stmt, "args", args)
+			return nil, ErrNoRecord
+		default:
+			logger.ErrorContext(
+				ctx, "unable to update business card",
+				"query", stmt, "args", args, "error", err,
+			)
+			return nil, err
+		}
+	}
+	logger.InfoContext(
+		rCtx,
+		"updated brreg business card",
+		"business_card",
+		pbc.PeppolBusinessCard,
+	)
+
+	err = json.Unmarshal(bcRaw, &pbc.PeppolBusinessCard)
+	if err != nil {
+		logger.ErrorContext(ctx, "error unmarshaling business card", "error", err)
+		return nil, err
+	}
+
+	return pbc, nil
 }
