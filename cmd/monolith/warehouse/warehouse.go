@@ -5,17 +5,21 @@ import (
 	"log/slog"
 
 	"github.com/r3d5un/modularmonolith/internal/monolith"
+	"github.com/r3d5un/modularmonolith/internal/warehouse/data"
 )
 
 type Module struct {
-	log *slog.Logger
+	log    *slog.Logger
+	models data.Models
 }
 
 func (m *Module) Startup(ctx context.Context, mono monolith.Monolith) {
 	m.initModuleLogger(mono.Logger())
 	m.log.Info("module logger initialized")
 
-	// TODO: Add models
+	m.log.Info("adding warehouse data models")
+	m.models = data.NewModels(mono.DB())
+
 	// TODO: Add endpoints
 }
 
