@@ -64,10 +64,12 @@ func run() (err error) {
 
 	app.mux = http.NewServeMux()
 
+	logger.Info("initializing modules")
 	app.modules = []monolith.Module{
 		&warehouse.Module{},
 	}
 
+	logger.Info("running module startup prodedures")
 	for _, module := range app.modules {
 		module.Startup(context.Background(), &app)
 	}
