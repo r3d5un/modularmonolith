@@ -6,15 +6,17 @@ import (
 	"net/http"
 
 	"github.com/r3d5un/modularmonolith/internal/config"
+	"github.com/r3d5un/modularmonolith/internal/monolith"
 	"github.com/r3d5un/modularmonolith/internal/queue"
 )
 
 type application struct {
-	cfg    *config.Configuration
-	db     *sql.DB
-	mq     *queue.ChannelPool
-	mux    *http.ServeMux
-	logger *slog.Logger
+	cfg     *config.Configuration
+	db      *sql.DB
+	mq      *queue.ChannelPool
+	mux     *http.ServeMux
+	logger  *slog.Logger
+	modules []monolith.Module
 }
 
 func (app *application) DB() *sql.DB {

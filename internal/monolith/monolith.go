@@ -19,5 +19,7 @@ type Monolith interface {
 }
 
 type Module interface {
-	Startup(ctx context.Context, mono *Monolith)
+	Startup(ctx context.Context, mono Monolith)
 }
+
+type Warehouse interface{}

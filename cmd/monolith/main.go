@@ -1,13 +1,16 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"log/slog"
 	"net/http"
 	"os"
 
 	"github.com/google/uuid"
+	"github.com/r3d5un/modularmonolith/cmd/monolith/warehouse"
 	"github.com/r3d5un/modularmonolith/internal/config"
+	"github.com/r3d5un/modularmonolith/internal/monolith"
 )
 
 func main() {
@@ -28,43 +31,48 @@ func run() (err error) {
 	)
 	slog.SetDefault(logger)
 
+	logger.Info("constructing application")
+	app := application{logger: logger}
+
 	logger.Info("loading configuration")
-	config, err := config.New()
+	app.cfg, err = config.New()
 	if err != nil {
 		bareLogger.Error("unable to load config", "error", err)
 		return err
 	}
-	logger.Info("configuration loaded", "configuration", config)
+	logger.Info("configuration loaded", "configuration", app.cfg)
 
 	logger.Info("opening database connection pool...")
-	db, err := openDB(config.DB)
+	app.db, err = openDB(app.cfg.DB)
 	if err != nil {
 		logger.Error("error occurred while connecting to the database",
 			"error", err,
 		)
 		return err
 	}
-	defer db.Close()
+	defer app.db.Close()
 	logger.Info("database connection pool established")
 
 	logger.Info("opening message queue connection pool...")
-	mq, err := openQueue(config.MQ)
+	app.mq, err = openQueue(app.cfg.MQ)
 	if err != nil {
 		slog.Error("unable to create message queue connection pool", "error", err)
 		return err
 	}
-	defer mq.Shutdown()
+	defer app.mq.Shutdown()
 	logger.Info("message queue connection pool established")
 
-	app := application{
-		cfg:    config,
-		db:     db,
-		mq:     mq,
-		mux:    http.NewServeMux(),
-		logger: logger,
+	app.mux = http.NewServeMux()
+
+	app.modules = []monolith.Module{
+		&warehouse.Module{},
 	}
 
-	logger.Info("starting server", "settings", config.App)
+	for _, module := range app.modules {
+		module.Startup(context.Background(), &app)
+	}
+
+	logger.Info("starting server", "settings", app.cfg.App)
 	err = app.serve()
 	if err != nil {
 		logger.Error("unable to start server", "error", err)
