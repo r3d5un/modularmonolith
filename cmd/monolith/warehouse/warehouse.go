@@ -3,6 +3,7 @@ package warehouse
 import (
 	"context"
 	"log/slog"
+	"time"
 
 	"github.com/r3d5un/modularmonolith/internal/monolith"
 	"github.com/r3d5un/modularmonolith/internal/warehouse/data"
@@ -18,7 +19,8 @@ func (m *Module) Startup(ctx context.Context, mono monolith.Monolith) {
 	m.log.Info("module logger initialized")
 
 	m.log.Info("adding warehouse data models")
-	m.models = data.NewModels(mono.DB())
+	timeout := time.Duration(mono.Config().DB.Timeout) * time.Second
+	m.models = data.NewModels(mono.DB(), &timeout)
 
 	// TODO: Add endpoints
 }
