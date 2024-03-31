@@ -1,6 +1,7 @@
 package data
 
 import (
+	"context"
 	"database/sql"
 	"time"
 
@@ -17,4 +18,29 @@ type PeppolBusinessCard struct {
 
 type PeppolBusinessCardModel struct {
 	DB *sql.DB
+}
+
+func (m *PeppolBusinessCardModel) Get(ctx context.Context, id string) (*PeppolBusinessCard, error) {
+	return nil, nil
+}
+
+func (m *PeppolBusinessCardModel) Insert(
+	ctx context.Context,
+	pbc PeppolBusinessCard,
+) (*PeppolBusinessCard, error) {
+	return nil, nil
+}
+
+func (m *PeppolBusinessCardModel) Upsert(
+	ctx context.Context,
+	bc *PeppolBusinessCard,
+) (*PeppolBusinessCard, error) {
+	return nil, nil
+}
+
+func (m *PeppolBusinessCardModel) Delete(
+	ctx context.Context,
+	id string,
+) (*PeppolBusinessCard, error) {
+	return nil, nil
 }
