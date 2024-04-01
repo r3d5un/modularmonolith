@@ -8,7 +8,6 @@ import (
 
 func (app *application) routes() http.Handler {
 	app.logger.Info("creating standard middleware chain")
-	// TODO: middleware reoverPanic
 	standard := alice.New(app.recoverPanic, app.logRequest)
 
 	handler := standard.Then(app.mux)
