@@ -102,3 +102,15 @@ func BadRequestResponse(w http.ResponseWriter, r *http.Request, message string) 
 	logger.InfoContext(ctx, "bad request response")
 	errorResponse(w, r, http.StatusBadRequest, message)
 }
+
+func ReadJSON(r *http.Request, data interface{}) error {
+	decoder := json.NewDecoder(r.Body)
+	decoder.DisallowUnknownFields()
+
+	err := decoder.Decode(data)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
