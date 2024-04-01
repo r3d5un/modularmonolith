@@ -41,6 +41,7 @@ type RouteDefinitionList []RouteDefinition
 func (m *Module) registerEndpoints(mux *http.ServeMux) {
 	routes := RouteDefinitionList{
 		{"GET /api/v1/warehouse/peppolbusinesscards", m.getPeppolBusinessCardHandler},
+		{"DELETE /api/v1/warehouse/peppolbusinesscards", m.getPeppolBusinessCardHandler},
 	}
 
 	for _, d := range routes {

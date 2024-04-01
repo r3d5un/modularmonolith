@@ -48,3 +48,40 @@ func (m *Module) getPeppolBusinessCardHandler(w http.ResponseWriter, r *http.Req
 		return
 	}
 }
+
+func (m *Module) deletePeppolBusinessCardHandler(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+
+	m.log.Info("parsing ID")
+	s := r.PathValue("id")
+	if s == "" {
+		m.log.Info("parameter empty", "key", "id")
+		httputils.BadRequestResponse(w, r, "id parameter emtpy")
+		return
+	}
+
+	m.log.Info("getting data", "id", s)
+	pbc, err := m.models.PeppolBusinessCards.Delete(ctx, s)
+	if err != nil {
+		switch {
+		case errors.Is(err, data.ErrNoRecord):
+			m.log.Info("peppol business card not found")
+			httputils.NotFoundResponse(w, r)
+			return
+		default:
+			m.log.Error("unable to delete peppol business card", "error", err)
+			httputils.ServerErrorResponse(w, r, err)
+			return
+		}
+	}
+
+	m.log.Info("returning peppol business card")
+	err = httputils.WriteJSON(
+		w, http.StatusOK, PeoolBusinessCardResponse{Data: *pbc}, nil,
+	)
+	if err != nil {
+		m.log.Error("error writing response", "error", err)
+		httputils.ServerErrorResponse(w, r, err)
+		return
+	}
+}
