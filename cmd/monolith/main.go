@@ -74,7 +74,6 @@ func run() (err error) {
 		module.Startup(context.Background(), &app)
 	}
 
-	logger.Info("starting server", "settings", app.cfg.App)
 	err = app.serve()
 	if err != nil {
 		logger.Error("unable to start server", "error", err)
