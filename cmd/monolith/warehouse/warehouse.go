@@ -15,7 +15,7 @@ type Module struct {
 	models data.Models
 }
 
-func (m *Module) Startup(ctx context.Context, mono monolith.Monolith) {
+func (m *Module) Setup(ctx context.Context, mono monolith.Monolith) {
 	m.initModuleLogger(mono.Logger())
 	m.log.Info("module logger initialized")
 
@@ -25,6 +25,10 @@ func (m *Module) Startup(ctx context.Context, mono monolith.Monolith) {
 
 	m.log.Info("registering routes")
 	m.registerEndpoints(mono.Mux())
+}
+
+func (m *Module) PostSetup() {
+	m.log.Info("performing post setup process")
 }
 
 func (m *Module) initModuleLogger(monoLogger *slog.Logger) {
