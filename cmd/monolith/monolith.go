@@ -16,7 +16,7 @@ type application struct {
 	mq      *queue.ChannelPool
 	mux     *http.ServeMux
 	logger  *slog.Logger
-	modules []monolith.Module
+	modules *monolith.Modules
 }
 
 func (app *application) DB() *sql.DB {
@@ -37,4 +37,8 @@ func (app *application) Logger() *slog.Logger {
 
 func (app *application) Config() *config.Configuration {
 	return app.cfg
+}
+
+func (app *application) Modules() *monolith.Modules {
+	return app.modules
 }
