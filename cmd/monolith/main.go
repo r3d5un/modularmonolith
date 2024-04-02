@@ -6,8 +6,10 @@ import (
 	"log/slog"
 	"net/http"
 	"os"
+	"reflect"
 
 	"github.com/google/uuid"
+	"github.com/r3d5un/modularmonolith/cmd/monolith/rabbit"
 	"github.com/r3d5un/modularmonolith/cmd/monolith/warehouse"
 	"github.com/r3d5un/modularmonolith/internal/config"
 	"github.com/r3d5un/modularmonolith/internal/monolith"
@@ -65,14 +67,14 @@ func run() (err error) {
 	app.mux = http.NewServeMux()
 
 	logger.Info("initializing modules")
-	app.modules = []monolith.Module{
-		&warehouse.Module{},
+	app.modules = &monolith.Modules{
+		Warehouse: &warehouse.Module{},
+		Rabbit:    &rabbit.Module{},
 	}
 
 	logger.Info("running module startup prodedures")
-	for _, module := range app.modules {
-		module.Startup(context.Background(), &app)
-	}
+	app.setupModules(context.Background())
+	app.postSetupModules(context.Background())
 
 	err = app.serve()
 	if err != nil {
@@ -81,4 +83,36 @@ func run() (err error) {
 	}
 
 	return nil
+}
+
+func (app *application) setupModules(ctx context.Context) {
+	val := reflect.ValueOf(app.modules)
+
+	if val.Kind() == reflect.Ptr {
+		val = val.Elem()
+	}
+
+	for i := 0; i < val.NumField(); i++ {
+		field := val.Field(i)
+
+		if module, ok := field.Interface().(monolith.Module); ok {
+			module.Setup(ctx, app)
+		}
+	}
+}
+
+func (app *application) postSetupModules(ctx context.Context) {
+	val := reflect.ValueOf(app.modules)
+
+	if val.Kind() == reflect.Ptr {
+		val = val.Elem()
+	}
+
+	for i := 0; i < val.NumField(); i++ {
+		field := val.Field(i)
+
+		if module, ok := field.Interface().(monolith.Module); ok {
+			module.PostSetup(ctx, app)
+		}
+	}
 }
