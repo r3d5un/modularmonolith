@@ -112,7 +112,7 @@ func (app *application) postSetupModules(ctx context.Context) {
 		field := val.Field(i)
 
 		if module, ok := field.Interface().(monolith.Module); ok {
-			module.PostSetup(ctx, app)
+			module.PostSetup()
 		}
 	}
 }

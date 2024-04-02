@@ -43,7 +43,7 @@ WHERE id = $1;`
 		slog.String("string", stmt), slog.String("id", id),
 	)
 	row := m.DB.QueryRowContext(qCtx, stmt, id)
-	err := row.Scan(&pbc.ID, &pbc.Name, &pbc.CountryCode, &pbc.LastUpdated, jpbc)
+	err := row.Scan(&pbc.ID, &pbc.Name, &pbc.CountryCode, &pbc.LastUpdated, &jpbc)
 	if err != nil {
 		switch err {
 		case sql.ErrNoRows:
