@@ -90,7 +90,7 @@ func (m *Module) deletePeppolBusinessCardHandler(w http.ResponseWriter, r *http.
 func (m *Module) putPeppolBusinessCardHandler(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
-	var pbcBody *peppol.BusinessCard
+	var pbcBody peppol.BusinessCard
 
 	m.log.Info("parsing business card from request body")
 	err := httputils.ReadJSON(r, pbcBody)
@@ -104,7 +104,7 @@ func (m *Module) putPeppolBusinessCardHandler(w http.ResponseWriter, r *http.Req
 		ID:                 pbcBody.Participant.Value,
 		Name:               pbcBody.Entity.Name.Name,
 		CountryCode:        pbcBody.Entity.CountryCode,
-		PeppolBusinessCard: pbcBody,
+		PeppolBusinessCard: &pbcBody,
 	}
 
 	m.log.Info("upserting peppol business card")
