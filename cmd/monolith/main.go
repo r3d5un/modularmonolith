@@ -74,7 +74,7 @@ func run() (err error) {
 
 	logger.Info("running module startup prodedures")
 	app.setupModules(context.Background())
-	app.postSetupModules(context.Background())
+	app.postSetupModules()
 
 	err = app.serve()
 	if err != nil {
@@ -101,7 +101,7 @@ func (app *application) setupModules(ctx context.Context) {
 	}
 }
 
-func (app *application) postSetupModules(ctx context.Context) {
+func (app *application) postSetupModules() {
 	val := reflect.ValueOf(app.modules)
 
 	if val.Kind() == reflect.Ptr {
