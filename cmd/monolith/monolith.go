@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"log/slog"
 	"net/http"
+	"os"
 
 	"github.com/r3d5un/modularmonolith/internal/config"
 	"github.com/r3d5un/modularmonolith/internal/monolith"
@@ -17,6 +18,7 @@ type application struct {
 	mux     *http.ServeMux
 	logger  *slog.Logger
 	modules *monolith.Modules
+	done    <-chan os.Signal
 }
 
 func (app *application) DB() *sql.DB {
@@ -41,4 +43,8 @@ func (app *application) Config() *config.Configuration {
 
 func (app *application) Modules() *monolith.Modules {
 	return app.modules
+}
+
+func (app *application) Done() <-chan os.Signal {
+	return app.done
 }

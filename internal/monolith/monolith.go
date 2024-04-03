@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	"log/slog"
 	"net/http"
+	"os"
 
 	"github.com/r3d5un/modularmonolith/internal/config"
 	"github.com/r3d5un/modularmonolith/internal/peppol"
@@ -18,6 +19,7 @@ type Monolith interface {
 	MQ() *queue.ChannelPool
 	Mux() *http.ServeMux
 	Modules() *Modules
+	Done() <-chan os.Signal
 }
 
 type Modules struct {
