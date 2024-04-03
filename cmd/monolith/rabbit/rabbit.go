@@ -37,6 +37,14 @@ func (m *Module) Setup(ctx context.Context, mono monolith.Monolith) {
 
 func (m *Module) PostSetup() {
 	m.log.Info("performing post setup process")
+
+	m.log.Info("making example function call to warehouse")
+	pbc, err := m.wh.GetPeppolBusinessCard(context.Background(), "0088:5903351900034")
+	if err != nil {
+		m.log.Error("unable to get peppol business card", "error", err)
+		return
+	}
+	m.log.Info("retrieved peppol business card", "pbc", pbc)
 }
 
 func (m *Module) initModuleLogger(monoLogger *slog.Logger) {
