@@ -30,6 +30,9 @@ func (m *Module) Setup(ctx context.Context, mono monolith.Monolith) {
 		os.Exit(1)
 	}
 	m.queues = queues
+
+	m.log.Info("creating background processes")
+	go queue.ConsumeExampleWorkQueue(m.queues.ExampleWorkQueue, mono.Done())
 }
 
 func (m *Module) PostSetup() {
@@ -50,6 +53,7 @@ type RouteDefinitionList []RouteDefinition
 func (m *Module) registerEndpoints(mux *http.ServeMux) {
 	routes := RouteDefinitionList{
 		{"POST /api/v1/queue/hello_world", m.postHelloWorldMessageHandler},
+		{"POST /api/v1/queue/example_work_queue", m.postExampleWorkQueueHandler},
 	}
 
 	for _, d := range routes {
