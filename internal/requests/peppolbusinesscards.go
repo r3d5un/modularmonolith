@@ -16,7 +16,11 @@ const (
 	peppolBusinessCardPath string = "/api/v1/warehouse/peppolbusinesscards/"
 )
 
-type PeppolBusinessCard struct {
+type PeppolBusinessCardResponse struct {
+	Data PeppolBusinessCardRecord
+}
+
+type PeppolBusinessCardRecord struct {
 	ID                 string               `json:"id"`
 	Name               string               `json:"name"`
 	CountryCode        string               `json:"countrycode"`
@@ -31,8 +35,10 @@ type PeppolBusinessCardRequests struct {
 func (r *PeppolBusinessCardRequests) Get(
 	ctx context.Context,
 	id string,
-) (*PeppolBusinessCard, error) {
+) (*PeppolBusinessCardResponse, error) {
 	logger := logging.LoggerFromContext(ctx)
+
+	logger.Info("url parts", "root", r.URL, "path", peppolBusinessCardPath, "id", id)
 
 	url := fmt.Sprintf("%s%s%s", r.URL, peppolBusinessCardPath, id)
 
@@ -50,7 +56,7 @@ func (r *PeppolBusinessCardRequests) Get(
 	}
 	defer res.Body.Close()
 
-	var pbc PeppolBusinessCard
+	var pbc PeppolBusinessCardResponse
 
 	body, err := io.ReadAll(res.Body)
 	if err != nil {

@@ -31,5 +31,5 @@ func (c *Client) GetPeppolBusinessCard(
 		return nil, err
 	}
 
-	return pbc.PeppolBusinessCard, nil
+	return pbc.Data.PeppolBusinessCard, nil
 }
