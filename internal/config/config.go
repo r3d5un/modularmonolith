@@ -9,7 +9,7 @@ type Configuration struct {
 	App ApplicationConfiguration  `json:"app"`
 	DB  DatabaseConfiguration     `json:"db"`
 	MQ  MessageQueueConfiguration `json:"mq"`
-	Req RequestConfiguration      `json:"rq"`
+	Rq  RequestConfiguration      `json:"rq"`
 }
 
 // The part of the configuration dedicated to manage the top level and shared
