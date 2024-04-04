@@ -64,4 +64,6 @@ func (p *ChannelPool) Shutdown() {
 		channel := <-p.channels
 		channel.Close() // Close all channels in the pool
 	}
+
+	p.conn.Close()
 }
