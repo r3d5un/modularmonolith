@@ -24,6 +24,16 @@ func (m *Module) postHelloWorldMessageHandler(w http.ResponseWriter, r *http.Req
 	}
 	logger.Info("message published")
 
+	// Example call to warehouse with alternative warehouse interface implementation
+	logger.Info("requesting data from warehouse")
+	pbc, err := m.whClient.GetPeppolBusinessCard(ctx, "0088:5903351900034")
+	if err != nil {
+		logger.Error("unable to retrieve data", "error", err)
+		httputils.ServerErrorResponse(w, r, err)
+		return
+	}
+	logger.Info("data retrieved with client", "pbc", pbc)
+
 	logger.Info("writing response")
 	err = httputils.WriteJSON(
 		w,

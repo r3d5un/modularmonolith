@@ -8,12 +8,14 @@ import (
 
 	"github.com/r3d5un/modularmonolith/internal/monolith"
 	"github.com/r3d5un/modularmonolith/internal/rabbit/queues"
+	"github.com/r3d5un/modularmonolith/internal/requests"
 )
 
 type Module struct {
-	log    *slog.Logger
-	wh     monolith.Warehouse
-	queues *queue.Queues
+	log      *slog.Logger
+	wh       monolith.Warehouse
+	queues   *queue.Queues
+	whClient monolith.Warehouse
 }
 
 func (m *Module) Setup(ctx context.Context, mono monolith.Monolith) {
@@ -22,6 +24,9 @@ func (m *Module) Setup(ctx context.Context, mono monolith.Monolith) {
 
 	m.log.Info("injecting warehouse module")
 	m.wh = mono.Modules().Warehouse
+
+	m.log.Info("creating warehouse client")
+	m.whClient = requests.NewClient(mono.Config().Rq)
 
 	m.log.Info("initializing queues")
 	queues, err := queue.NewQueues(mono.MQ())
@@ -33,6 +38,9 @@ func (m *Module) Setup(ctx context.Context, mono monolith.Monolith) {
 
 	m.log.Info("creating background processes")
 	go queue.ConsumeExampleWorkQueue(m.queues.ExampleWorkQueue, mono.Done())
+
+	m.log.Info("registering routes")
+	m.registerEndpoints(mono.Mux())
 }
 
 func (m *Module) PostSetup() {
