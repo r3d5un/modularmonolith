@@ -44,7 +44,8 @@ type Module interface {
 	// PostSetup performs any additional setup tasks, usually in cases where
 	// external resources from other modules were required, and a guarantee
 	// that the initial setup of any given module is completed to avoid
-	// segmentation faults.
+	// segmentation faults. Note that API calls through HTTP will not work
+	// if the Monolith server is not running.
 	PostSetup()
 }
 
