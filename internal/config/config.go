@@ -9,6 +9,7 @@ type Configuration struct {
 	App ApplicationConfiguration  `json:"app"`
 	DB  DatabaseConfiguration     `json:"db"`
 	MQ  MessageQueueConfiguration `json:"mq"`
+	Req RequestConfiguration      `json:"rq"`
 }
 
 // The part of the configuration dedicated to manage the top level and shared
@@ -29,6 +30,10 @@ type DatabaseConfiguration struct {
 type MessageQueueConfiguration struct {
 	DSN      string `json:"-"`
 	MaxConns int    `json:"max-conns"`
+}
+
+type RequestConfiguration struct {
+	URL string `json:"url"`
 }
 
 func New() (*Configuration, error) {
